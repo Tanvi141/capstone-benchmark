@@ -1,0 +1,2 @@
+            M            		            N            		            K            		            B            		          cublas         		          triton         		   cublas + leaky_relu   		   triton + leaky_relu   
+           2048          		           512           		           2048          		           128           		          68.953         		          57.367         		          65.372         		          57.327         
