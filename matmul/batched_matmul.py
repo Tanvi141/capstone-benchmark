@@ -18,7 +18,7 @@ import triton
 import triton.language as tl
 import numpy as np
 import random
-
+import sys
 
 # CREDITS: Initially inspired by the Triton tutorial
 
@@ -26,19 +26,32 @@ import random
 def leaky_relu(x):
     return tl.where(x >= 0, x, 0.1 * x)
 
-configs = []
-for i in range(10):
-    configs.append(triton.Config(
-        {"BLOCK_M_SIZE": random.randrange(16, 512, 16), "BLOCK_N_SIZE": random.randrange(16, 512, 16), 
-        "BLOCK_K_SIZE": random.randrange(16, 512, 16), "GROUP_M_SIZE": random.randrange(16, 512, 16)}, 
-        num_stages=random.randrange(2, 8, 2), num_warps=random.randrange(2, 8, 2)
-    ))
+# try:
+#     configs = []
+#     for arg in sys.argv[1:]:
+#         m_block, n_block, k_block, m_group, stages, warps = arg.split(",")
+#         print(m_block, n_block, k_block, m_group, stages, warps)
+#         configs.append(triton.Config({'BLOCK_SIZE_M': int(m_block), 'BLOCK_SIZE_N': int(n_block), 'BLOCK_SIZE_K': int(k_block), 'GROUP_SIZE_M': int(m_group)}, num_stages=int(stages), num_warps=int(warps)),
+#             ) 
+#     raise Exception()
+#     print("Using configs:", sys.argv[1:])
+# except Exception as e:
+#     print("Not using command line arguments in batch matmul", e)
+# configs2 = [
+#         triton.Config({'BLOCK_SIZE_M': 128, 'BLOCK_SIZE_N': 256, 'BLOCK_SIZE_K': 64, 'GROUP_SIZE_M': 8}, num_stages=3, num_warps=8),
+#         triton.Config({'BLOCK_SIZE_M': 64, 'BLOCK_SIZE_N': 256, 'BLOCK_SIZE_K': 32, 'GROUP_SIZE_M': 8}, num_stages=4, num_warps=4),
+#         triton.Config({'BLOCK_SIZE_M': 128, 'BLOCK_SIZE_N': 128, 'BLOCK_SIZE_K': 32, 'GROUP_SIZE_M': 8}, num_stages=4, num_warps=4),
+#         triton.Config({'BLOCK_SIZE_M': 128, 'BLOCK_SIZE_N': 64, 'BLOCK_SIZE_K': 32, 'GROUP_SIZE_M': 8}, num_stages=4, num_warps=4),
+#         triton.Config({'BLOCK_SIZE_M': 64, 'BLOCK_SIZE_N': 128, 'BLOCK_SIZE_K': 32, 'GROUP_SIZE_M': 8}, num_stages=4, num_warps=4),
+#         triton.Config({'BLOCK_SIZE_M': 128, 'BLOCK_SIZE_N': 32, 'BLOCK_SIZE_K': 32, 'GROUP_SIZE_M': 8}, num_stages=4, num_warps=4),
+#         triton.Config({'BLOCK_SIZE_M': 64, 'BLOCK_SIZE_N': 32, 'BLOCK_SIZE_K': 32, 'GROUP_SIZE_M': 8}, num_stages=5, num_warps=2),
+#         triton.Config({'BLOCK_SIZE_M': 32, 'BLOCK_SIZE_N': 64, 'BLOCK_SIZE_K': 32, 'GROUP_SIZE_M': 8}, num_stages=5, num_warps=2),
+#     ]
 
+m_block, n_block, k_block, m_group, stages, warps = 32,64,32,8,5,2
 @triton.autotune(
     configs=[
-        triton.Config(
-            {"BLOCK_M_SIZE": 128, "BLOCK_N_SIZE": 256, "BLOCK_K_SIZE": 32, "GROUP_M_SIZE": 8}, num_stages=2, num_warps=8
-        ),
+        # triton.Config({'BLOCK_SIZE_M': m_block, 'BLOCK_SIZE_N': n_block, 'BLOCK_SIZE_K': k_block, 'GROUP_SIZE_M': m_group}, num_stages=stages, num_warps=warps),
         triton.Config(
             {"BLOCK_M_SIZE": 256, "BLOCK_N_SIZE": 128, "BLOCK_K_SIZE": 32, "GROUP_M_SIZE": 8}, num_stages=2, num_warps=8
         ),
@@ -67,7 +80,6 @@ for i in range(10):
             {"BLOCK_M_SIZE": 32, "BLOCK_N_SIZE": 64, "BLOCK_K_SIZE": 32, "GROUP_M_SIZE": 8}, num_stages=5, num_warps=2
         ),
     ],
-    # configs=configs,
     key=["m_size", "n_size", "k_size"],
 )
 @triton.jit
