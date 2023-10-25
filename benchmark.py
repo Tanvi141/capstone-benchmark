@@ -1,7 +1,7 @@
 import matmul.matmul as mm
 from remote_plot import plt
 import seaborn as sns
-import cutlass as plotcut
+# import cutlass as plotcut
 import triton, torch
 
 SPACER = 25
@@ -11,7 +11,7 @@ def plot_graphs(provider_wise_res_mm, providers, matrix_configurations, mm=True)
 
     plt.figure(figsize=(15 + (len(matrix_configurations) - 12), 10))
     plt.xlabel("Matrix Configurations")
-    plt.ylabel("TFLOPS")
+    plt.ylabel("Speedup")
 
     plt.grid()
     
@@ -19,15 +19,15 @@ def plot_graphs(provider_wise_res_mm, providers, matrix_configurations, mm=True)
         mc_labels = [str(matrix_configurations[i][:-1]) for i in range(len(matrix_configurations))]
 
         # CUTLASS graph
-        cutlass_y = []
-        for mc in matrix_configurations:
-            cutlass_y.append(plotcut.get_max_tflops(mc[0], mc[1], mc[2]))
+        # cutlass_y = []
+        # for mc in matrix_configurations:
+        #     cutlass_y.append(plotcut.get_max_tflops(mc[0], mc[1], mc[2]))
 
         # Obtaining speedups
         for i in range(len(provider_wise_res_mm[0])):
             for j in range(1, len(providers)):
                 provider_wise_res_mm[j][i] /= provider_wise_res_mm[0][i]
-            cutlass_y[i] /= provider_wise_res_mm[0][i]
+            # cutlass_y[i] /= provider_wise_res_mm[0][i]
         
         for i in range(len(provider_wise_res_mm[0])):
             provider_wise_res_mm[0][i] = 1
@@ -35,11 +35,11 @@ def plot_graphs(provider_wise_res_mm, providers, matrix_configurations, mm=True)
         for i in range(len(provider_wise_res_mm)):
             plt.plot(x, provider_wise_res_mm[i], marker='o')
         
-        plt.plot(x, cutlass_y, marker='o')
+        # plt.plot(x, cutlass_y, marker='o')
             
         plt.title("Matmul")
         plt.xticks(x, mc_labels, rotation=20)
-        plt.legend(providers + ['cutlass'])
+        plt.legend(providers)
         plt.show()
 
 def write_mm(full_res_mm):
