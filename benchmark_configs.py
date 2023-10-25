@@ -2,9 +2,9 @@ import benchmark
 import sys 
 matrix_configurations = []
 
-matrix_configurations.extend([[2048, 2048, 1 * i, 128] for i in [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]])
+# matrix_configurations.extend([[2048, 2048, 1 * i, 128] for i in [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]])
 # matrix_configurations.extend([[2048, 1 * i, 2048, 128] for i in [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]])
-# matrix_configurations.extend([[1 * i, 2048, 2048, 128] for i in [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]])
+matrix_configurations.extend([[1 * i, 2048, 64, 128] for i in [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]])
 
 
 def run_benchmarkers():
@@ -43,7 +43,7 @@ def run_benchmarkers():
 
 def plot_configs():
     results = {}
-    results["cublas"] = {tuple(k): -1 for k in matrix_configurations}
+    results["cublas + leaky_relu"] = {tuple(k): -1 for k in matrix_configurations}
     with open("benchmark_results.txt", "r") as f:
         line = f.readline().strip()
         while line:
@@ -53,7 +53,7 @@ def plot_configs():
             provider, typ, m_block, n_block, k_block, m_group, stages, warps, m, n, k, b, tflops, _ = vals
             config_str = m_block+","+n_block+","+k_block+","+m_group+","+stages+","+warps
             
-            if "+" not in provider and provider!="cublas":
+            if "+" not in provider:
                 line = f.readline().strip()
                 continue
 

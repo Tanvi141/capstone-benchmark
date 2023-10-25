@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # Define the list of values for each variable
-m_block_values=64 #(16 32 64 128)
-n_block_values=64 #(16 32 64 128)
+m_block_values=32 #(16 32 64 128)
+n_block_values=32 #(16 32 64 128)
 k_block_values=32 #(16 32 64 128)
-m_group_values=8 #(4 8 16)
-stages_values=(1 2 3 4 5)
-warps_values=4 #(2 4 8)
+m_group_values=4 #(4 8 16)
+stages_values=4 #(1 2 3 4 5)
+warps_values=(2 4 8)
 
 # Output file for results
 output_file="benchmark_results.txt"

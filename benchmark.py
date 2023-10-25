@@ -10,7 +10,7 @@ def plot_graphs(provider_wise_res_mm, providers, matrix_configurations, mm=True)
     x = [i for i in range(1, len(matrix_configurations) + 1)]
 
     plt.figure(figsize=(15 + (len(matrix_configurations) - 12), 10))
-    plt.xlabel("Matrix Configurations")
+    plt.xlabel("Matrix Configurations ")
     plt.ylabel("Speedup")
 
     plt.grid()
@@ -37,7 +37,7 @@ def plot_graphs(provider_wise_res_mm, providers, matrix_configurations, mm=True)
         
         # plt.plot(x, cutlass_y, marker='o')
             
-        plt.title("Matmul")
+        plt.title("Matmul " + "m_block, n_block, k_block, m_group, stages, warps")
         plt.xticks(x, mc_labels, rotation=20)
         plt.legend(providers)
         plt.show()
