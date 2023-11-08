@@ -4,7 +4,7 @@
 #include <iostream>
 #include <chrono>
 
-int main() {
+int main(int argc, char* argv[]) {
     const int M = 2; // Matrix dimensions (adjust as needed)
     const int N = 3;
     const int K = 4;
@@ -18,12 +18,26 @@ int main() {
     // float* C2 = new float[M+N];
     // float* C3 = new float[M+N];
 
-    std::cout<<"A\n";
     for (int i=0; i<M; i++){
         for(int j=0; j<K; j++){
             A[i*M+j] = i+j*2;
             A[0] = 5;
-            std::cout<<A[i*M+j]<<" ";
+            // std::cout<<A[i*M+j]<<" ";
+        }
+    }
+
+    for (int i=0; i<K; i++){
+        for(int j=0; j<N; j++){
+            B[i*K+j] = i*2+j;
+            B[1] = -1;
+            // std::cout<<B[i*K+j]<<" ";
+        }
+    }
+
+    std::cout<<"A\n";
+    for (int i=0; i<M; i++){
+        for(int j=0; j<K; j++){
+            std::cout<<A[i+j*K]<<" ";
         }
         std::cout<<"\n";
     }
@@ -31,16 +45,14 @@ int main() {
     std::cout<<"B\n";
     for (int i=0; i<K; i++){
         for(int j=0; j<N; j++){
-            B[i*K+j] = i*2+j;
-            B[1] = -1;
-            std::cout<<B[i*K+j]<<" ";
+            std::cout<<B[i+j*N]<<" ";
         }
         std::cout<<"\n";
     }
 
     for (int i=0; i<M; i++){
         for(int j=0; j<N; j++){
-            C1[i*M+j] = 2;
+            C1[i*M+j] = 0;
             // std::cout<<C1[i*M+j]<<" ";
         }
         // std::cout<<"\n";
@@ -52,12 +64,20 @@ int main() {
     // Triton triton("matmul_kernel.ptx", "matmul_kernel_0d1d2d3d4d5c6c7c8d9c10d11c", "leaky_relu");
     // triton.forward(A, B, C1, M, N, K);
     
+    int poss[6] = {
+        std::stoi(argv[1]), 
+        std::stoi(argv[2]), 
+        std::stoi(argv[3]), 
+        std::stoi(argv[4]), 
+        std::stoi(argv[5]), 
+        std::stoi(argv[6])};
+
     Cublas cublas("leaky_relu");
-    cublas.forward(A, B, C1, M, N, K);
+    cublas.forward(A, B, C1, M, N, K, poss);
     std::cout<<"C\n";
     for (int i=0; i<M; i++){
         for(int j=0; j<N; j++){
-            std::cout<<C1[i*M+j]<<" ";
+            std::cout<<C1[i+j*N]<<" ";
         }
         std::cout<<"\n";
     }

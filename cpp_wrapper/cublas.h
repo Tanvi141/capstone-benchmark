@@ -14,7 +14,8 @@ public:
                     float *op,
                     int M,
                     int N,
-                    int K);
+                    int K,
+                    int dims[6]);
 private:
     std::string activation_;
     cublasHandle_t handle_;

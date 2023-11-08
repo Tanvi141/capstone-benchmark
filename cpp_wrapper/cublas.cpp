@@ -17,7 +17,8 @@ void Cublas::forward(float const *ip, //A
                     float *op, // C
                     int M,
                     int N,
-                    int K){
+                    int K, 
+                    int dims[6]){
     
     float* A;
     float* B;
@@ -34,24 +35,24 @@ void Cublas::forward(float const *ip, //A
     // cublasStatus_t status = cublasGemmEx(
     //     handle_,
     //     CUBLAS_OP_N, CUBLAS_OP_N, // No transpose for A and B
-    //     N, M, K, // Matrix dimensions
+    //     M, N, K, // Matrix dimensions
     //     &alpha,
-    //     B, CUDA_R_32F, N, // A matrix
-    //     A, CUDA_R_32F, K, // B matrix
+    //     A, CUDA_R_32F, M, // A matrix
+    //     B, CUDA_R_32F, K, // B matrix
     //     &beta,
-    //     C, CUDA_R_32F, N, // Output C matrix
+    //     C, CUDA_R_32F, M, // Output C matrix
     //     CUDA_R_32F, CUBLAS_GEMM_DEFAULT_TENSOR_OP // Data types and operation
     // );
 
     cublasStatus_t status = cublasGemmEx(
         handle_,
         CUBLAS_OP_N, CUBLAS_OP_N, // No transpose for A and B
-        M, N, K, // Matrix dimensions
+        dims[0], dims[1], dims[2], // Matrix dimensions
         &alpha,
-        B, CUDA_R_32F, N, // A matrix
-        A, CUDA_R_32F, K, // B matrix
+        B, CUDA_R_32F, dims[3], // A matrix
+        A, CUDA_R_32F, dims[4], // B matrix
         &beta,
-        C, CUDA_R_32F, N, // Output C matrix
+        C, CUDA_R_32F, dims[5], // Output C matrix
         CUDA_R_32F, CUBLAS_GEMM_DEFAULT_TENSOR_OP // Data types and operation
     );
 
