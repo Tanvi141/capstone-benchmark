@@ -1,12 +1,12 @@
 #include "triton.h"
 // #include "cuTLASS.h"
-// #include "cuBLAS.h"
+#include "cublas.h"
 #include <iostream>
 #include <chrono>
 
 int main() {
-    const int M = 4; // Matrix dimensions (adjust as needed)
-    const int N = 4;
+    const int M = 2; // Matrix dimensions (adjust as needed)
+    const int N = 3;
     const int K = 4;
 
     // float A[M][K];
@@ -18,27 +18,43 @@ int main() {
     // float* C2 = new float[M+N];
     // float* C3 = new float[M+N];
 
+    std::cout<<"A\n";
     for (int i=0; i<M; i++){
         for(int j=0; j<K; j++){
-            A[i*M+j] = i+j;
+            A[i*M+j] = i+j*2;
+            A[0] = 5;
             std::cout<<A[i*M+j]<<" ";
         }
         std::cout<<"\n";
     }
 
+    std::cout<<"B\n";
     for (int i=0; i<K; i++){
         for(int j=0; j<N; j++){
-            B[i*K+j] = i+j;
+            B[i*K+j] = i*2+j;
+            B[1] = -1;
             std::cout<<B[i*K+j]<<" ";
         }
         std::cout<<"\n";
     }
 
+    for (int i=0; i<M; i++){
+        for(int j=0; j<N; j++){
+            C1[i*M+j] = 2;
+            // std::cout<<C1[i*M+j]<<" ";
+        }
+        // std::cout<<"\n";
+    }
+
     // Initialize matrices A and B (fill with data)
 
-    Triton triton("matmul_tf32_64_32.ptx", "matmul_kernel_01234567891011", "leaky_relu");
-    triton.forward(A, B, C1, M, N, K);
-
+    // Triton triton("matmul_tf32_64_32.ptx", "matmul_kernel_01234567891011", "leaky_relu");
+    // Triton triton("matmul_kernel.ptx", "matmul_kernel_0d1d2d3d4d5c6c7c8d9c10d11c", "leaky_relu");
+    // triton.forward(A, B, C1, M, N, K);
+    
+    Cublas cublas("leaky_relu");
+    cublas.forward(A, B, C1, M, N, K);
+    std::cout<<"C\n";
     for (int i=0; i<M; i++){
         for(int j=0; j<N; j++){
             std::cout<<C1[i*M+j]<<" ";
