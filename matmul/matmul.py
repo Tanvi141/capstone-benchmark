@@ -303,6 +303,7 @@ def matmul(a, b, activation=""):
         triton.cdiv(M, META['BLOCK_SIZE_M']) * triton.cdiv(N, META['BLOCK_SIZE_N']),
     )
 
+    print("Outermost call of matmul, grid = ", grid)
     matmul_kernel[grid](
         a, b, c,
         M, N, K,
@@ -369,4 +370,17 @@ def benchmark(M, N, K, provider, activation):
     return perf(ms), perf(max_ms), perf(min_ms)
 
 
-# benchmark.run(show_plots=True, print_data=True)
+if __name__ == "__main__":
+    M = 2048
+    N = 2048
+    K = 64
+
+    a = torch.randn((M, K), device='cuda', dtype=torch.float16)
+    b = torch.randn((K, N), device='cuda', dtype=torch.float16)
+    matmul(a, b, activation="leaky_relu")
+
+    a = torch.randn((M*2, K), device='cuda', dtype=torch.float16)
+    b = torch.randn((K, N*3), device='cuda', dtype=torch.float16)
+    matmul(a, b, activation="leaky_relu")
+
+    # benchmark.run(show_plots=True, print_data=True)
