@@ -50,8 +50,8 @@ def plot_configs():
             vals = line.split(",")
         # cublas,m,64,64,32,8,2,4,2048,2048,1,128,0.431,
 
-            provider, typ, m_block, n_block, k_block, m_group, stages, warps, m, n, k, b, tflops, _ = vals
-            config_str = m_block+","+n_block+","+k_block+","+m_group+","+stages+","+warps
+            provider, typ, config_str, m, n, k, b, tflops, _ = vals
+            # config_str = m_block+","+n_block+","+k_block+","+m_group+","+stages+","+warps
             
             if "+" not in provider:
                 line = f.readline().strip()
@@ -60,7 +60,7 @@ def plot_configs():
             if provider.startswith("cublas"):
                 plotline = provider
             else:
-                plotline = provider + ": " + config_str
+                plotline = config_str
             
             if plotline not in results:
                 results[plotline] = {tuple(k): -1 for k in matrix_configurations}

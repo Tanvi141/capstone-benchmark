@@ -166,8 +166,10 @@ import sys
 
 try:
     configs1 = []
-    for arg in sys.argv[1:]:
-        m_block, n_block, k_block, m_group, stages, warps = arg.split(",")
+    for arg in sys.argv[1].split("!"):
+        if len(arg) < 3:
+            continue
+        m_block, n_block, k_block, m_group, stages, warps = arg.strip().split(".")
         print(m_block, n_block, k_block, m_group, stages, warps)
         configs1.append(triton.Config({'BLOCK_SIZE_M': int(m_block), 'BLOCK_SIZE_N': int(n_block), 'BLOCK_SIZE_K': int(k_block), 'GROUP_SIZE_M': int(m_group)}, num_stages=int(stages), num_warps=int(warps)),
             ) 
@@ -303,7 +305,7 @@ def matmul(a, b, activation=""):
         triton.cdiv(M, META['BLOCK_SIZE_M']) * triton.cdiv(N, META['BLOCK_SIZE_N']),
     )
 
-    print("Outermost call of matmul, grid = ", grid)
+    # print("Outermost call of matmul, grid = ", grid)
     matmul_kernel[grid](
         a, b, c,
         M, N, K,
